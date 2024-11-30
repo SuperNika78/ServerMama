@@ -1,7 +1,8 @@
 ServerMama
 
 Tugas OS Server Teknik Komputer
-William Hanjaya(23.83.0959)
+
+- William Hanjaya(23.83.0959)
 
 **Server Services Overview**
 Web Server (WordPress)
