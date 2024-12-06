@@ -110,96 +110,24 @@ systemctl restart zomboid
 systemctl status zomboid
 ```
 
-**Install LAMP Stack**
+**Gunakan Policy Kit (Polkit) agar User dapat Menjalankan Perintah untuk Mengatur Server tanpa Autentikasi**
 ```console
-# Install Apache, MySQL, PHP
-sudo apt install apache2 mysql-server php libapache2-mod-php php-mysql -y
+# Buat Polkit Rule
+sudo nano /etc/polkit-1/rules.d/50-allow-zomboid.rules
 
-sudo systemctl enable apache2
+# Tambahkan rule untuk service Zomboid
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units" &&
+        action.lookup("unit") == "zomboid.service" &&
+        subject.user == "pzuser") {
+        return polkit.Result.YES;
+    }
+});
 
-sudo systemctl start apache2
-
-sudo mysql_secure_installation
-
-sudo apt install php php-mysql php-curl php-gd php-mbstring php-xml php-xmlrpc -y
-```
-
-**Konfigurasi MySQL Database untuk Wordpress**
-```console
-# Login MySQL
-sudo mysql
-
-# Buat database and user untuk WordPress
-CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON wordpress.* TO 'admin'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
 
 ```
 
 
-
-**Download dan Konfigurasi Wordpress**
-```console
-# Download Wordpress
-curl -O https://wordpress.org/latest.tar.gz
-
-# Extract Wordpress
-tar -xzvf latest.tar.gz
-
-# Pindahkan Wordpress ke web root
-sudo mv wordpress /var/www/html/
-
-# Atur permissions pada direktori wordpress tersebut
-sudo chown -R www-data:www-data /var/www/html/wordpress
-sudo chmod -R 755 /var/www/html/wordpress
-```
-
-**Konfigurasi Apache untuk WordPress**
-```console
-# Edit konfigurasi
-sudo nano /etc/apache2/sites-enabled/wordpress.conf
-
-<VirtualHost *:80>
-    DocumentRoot /var/www/html/wordpress
-    <Directory /var/www/html/wordpress>
-        Options FollowSymLinks
-        AllowOverride Limit Options FileInfo
-        DirectoryIndex index.php
-        Require all granted
-    </Directory>
-    <Directory /var/www/html/wordpress/wp-content>
-        Options FollowSymLinks
-        Require all granted
-    </Directory>
-</VirtualHost>
-
-# Enable site dan Apache mod_rewrite
-sudo a2ensite wordpress
-sudo a2enmod rewrite
-sudo systemctl reload apache2
-```
-
-**Finalize WordPress Setup**
-```console
-# Buka server IP address di browser
-http://192.168.18.203
-
-# Ikuti langkah-langkah instalasi:
-1. Pilih bahasa
-2. Masukkan detail database :
-  - Database Name : wordpress
-  - Username : admin
-  - Password : password
-  - Table Prefix : wp_
-3. Jalankan instalasi
-4. Site Title : Server Mama
-5. Username : admin
-6. Password : @!admin227887
-7. Email : admin@mama.com
-7. Install WordPress
-```
 
 **DNS Server (BIND9)**
 ```console
