@@ -124,7 +124,8 @@ polkit.addRule(function(action, subject) {
     }
 });
 
-
+# Restart Polkit
+sudo systemctl restart polkit
 ```
 
 
